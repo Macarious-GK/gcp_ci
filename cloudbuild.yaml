@@ -1,0 +1,27 @@
+steps:
+- name: 'ubuntu'
+  volumes:
+  - name: 'vol1'
+    path: '/persistent_volume'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+        echo "Hello, world!" > /persistent_volume/file
+- name: 'ubuntu'
+  volumes:
+  - name: 'vol1'
+    path: '/persistent_volume'
+  args: ['cat', '/persistent_volume/file']
+
+
+- name: 'gcr.io/cloud-builders/docker'
+  script: |
+    docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1 .
+  automapSubstitutions: true
+images:
+- 'us-west2-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1'  
+
+- name: "gcr.io/cloud-builders/docker"
+  id: "build-step"
+  args: ["build", "-t", "us-docker.pkg.dev/my-project/demo/helloworld-image", "."]
