@@ -1,63 +1,53 @@
 
 steps:
 
-- name: "python:3.13"
-  id: "Install Dependencies and RunUnit Tests"
-  dir: "app"
+# - name: "python:3.13"
+#   id: "Install Dependencies and RunUnit Tests"
+#   dir: "app"
+#   entrypoint: "bash"
+#   args:
+#     - "-c"
+#     - |
+#       pip install -r requirements.txt
+#       pytest -v > /workspace/test_results.txt
+
+# - name: "gcr.io/cloud-builders/docker"
+#   id: "Build Docker Image"
+#   args: ['build', '-t', '${_IMAGE_NAME}', '.']
+
+# - name: 'aquasec/trivy:0.72.0'
+#   id: 'Trivy scan'
+#   args:
+#     - 'image'
+#     - '--severity'
+#     - 'CRITICAL,HIGH'        # Only fail on critical and high severity
+#     - '--no-progress'        # Clean output for CI logs
+#     - '--format'
+#     - 'table'                # Output format (table, json, template)
+#     - '--output'
+#     - '/workspace/trivy-report.json'
+#     - '${_IMAGE_NAME}'
+
+- name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+  id: "List Buckets"
   entrypoint: "bash"
   args:
     - "-c"
     - |
-      pip install -r requirements.txt
-      pytest -v > /workspace/test_results.txt
-
-- name: "ubuntu"
-  id: "mac test "
-  entrypoint: "bash"
-  args: 
-    - '-c'
-    - 'ls -la /workspace; cat /workspace/test_results.txt'
-
-
-- name: "gcr.io/cloud-builders/docker"
-  id: "Build Docker Image"
-  args: ['build', '-t', '${_IMAGE_NAME}', '.']
-
-# - name: 'aquasec/trivy:0.69.3'
-#   id: 'Trivy Report & Scan'
-#   args:
-#     - 'c'
-#     - |
-#       trivy image --scanners vuln ${_IMAGE_NAME}
-#       # # Also generate a JSON report for tooling
-#       # trivy image --format json --output /workspace/trivy-report.json ${_IMAGE_NAME}
-#       # # Gate check - fail if critical or high vulnerabilities exist
-#       # trivy image --exit-code 1 --severity CRITICAL ${_IMAGE_NAME}
-
-- name: 'aquasec/trivy:0.69.3'
-  id: 'scan'
-  args:
-    - 'image'
-    - '--exit-code'
-    - '1'                    # Exit with code 1 if vulnerabilities found
-    - '--severity'
-    - 'CRITICAL,HIGH'        # Only fail on critical and high severity
-    - '--no-progress'        # Clean output for CI logs
-    - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$SHORT_SHA'
-
+      gcloud storage buckets list
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
-substitutions:
-  _IMAGE_NAME: "europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:latest"
+# substitutions:
+#   _IMAGE_NAME: "europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:latest"
 
-images:
-- "${_IMAGE_NAME}"
+# images:
+#   - "${_IMAGE_NAME}"
 
-# artifacts:
-#   objects:
-#     location: 'gs://$PROJECT_ID-build-artifacts/scans/$BUILD_ID/'
-#     paths:
-#       - '/workspace/trivy-report.txt'
-#       - '/workspace/trivy-report.json'
+artifacts:
+  objects:
+    location: 'gs://project-be3586ae-547c-413e-aac-build-artifacts/artifacts/'
+    paths:
+      - '/workspace/test_results.txt'
+      # - '/workspace/trivy-report.txt'
