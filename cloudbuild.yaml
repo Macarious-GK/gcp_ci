@@ -39,7 +39,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 substitutions:
-  _IMAGE_NAME: "europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:latest"
+  _IMAGE_NAME: "europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:latest"
 
 images:
 - "${_IMAGE_NAME}"
