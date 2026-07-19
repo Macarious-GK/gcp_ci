@@ -2,6 +2,7 @@ steps:
 
 - name: "python:3.13"
   id: "Install Dependencies and RunUnit Tests"
+  dir: "app"
   entrypoint: "bash"
   args:
     - "-c"
@@ -21,9 +22,26 @@ steps:
   id: "Build Docker Image"
   args: ['build', '-t', 'europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA', '.']
 
+- name: 'aquasec/trivy:0.69.3'
+  id: 'Trivy Report & Scan'
+  args:
+    - 'c'
+    - |
+      # Also generate a JSON report for tooling
+      trivy image --format json --output /workspace/trivy-report.json europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA
+      # Gate check - fail if critical or high vulnerabilities exist
+      trivy image --exit-code 1 --severity CRITICAL europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA
 
-images:
-  - europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA
+# images:
+#   - europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+
+# artifacts:
+#   objects:
+#     location: 'gs://$PROJECT_ID-build-artifacts/scans/$BUILD_ID/'
+#     paths:
+#       - '/workspace/trivy-report.txt'
+#       - '/workspace/trivy-report.json'
