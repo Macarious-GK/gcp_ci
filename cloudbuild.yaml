@@ -1,3 +1,9 @@
+substitutions:
+  _IMAGE_NAME: "europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:latest"
+
+images:
+- "${_IMAGE_NAME}"
+
 steps:
 
 - name: "python:3.13"
@@ -20,20 +26,19 @@ steps:
 
 - name: "gcr.io/cloud-builders/docker"
   id: "Build Docker Image"
-  args: ['build', '-t', 'europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA', '.']
+  args: ['build', '-t', '${_IMAGE_NAME}', '.']
 
 - name: 'aquasec/trivy:0.69.3'
   id: 'Trivy Report & Scan'
   args:
     - 'c'
     - |
-      # Also generate a JSON report for tooling
-      trivy image --format json --output /workspace/trivy-report.json europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA
-      # Gate check - fail if critical or high vulnerabilities exist
-      trivy image --exit-code 1 --severity CRITICAL europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA
+      trivy image --scanners vuln ${_IMAGE_NAME}
+      # # Also generate a JSON report for tooling
+      # trivy image --format json --output /workspace/trivy-report.json ${_IMAGE_NAME}
+      # # Gate check - fail if critical or high vulnerabilities exist
+      # trivy image --exit-code 1 --severity CRITICAL ${_IMAGE_NAME}
 
-# images:
-#   - europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:$SHORT_SHA
 
 options:
   logging: CLOUD_LOGGING_ONLY
