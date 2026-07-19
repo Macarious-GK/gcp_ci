@@ -1,8 +1,3 @@
-substitutions:
-  _IMAGE_NAME: "europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:latest"
-
-images:
-- "${_IMAGE_NAME}"
 
 steps:
 
@@ -43,6 +38,11 @@ steps:
 options:
   logging: CLOUD_LOGGING_ONLY
 
+substitutions:
+  _IMAGE_NAME: "europe-west4-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:latest"
+
+images:
+- "${_IMAGE_NAME}"
 
 # artifacts:
 #   objects:
