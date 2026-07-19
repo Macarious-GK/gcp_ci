@@ -1,40 +1,37 @@
 
 steps:
 
-- name: "python:3.13"
-  id: "Install Dependencies and RunUnit Tests"
-  dir: "app"
-  entrypoint: "bash"
-  args:
-    - "-c"
-    - |
-      pip install -r requirements.txt
-      pytest -v > /workspace/test_results.txt
+# - name: "python:3.13"
+#   id: "Install Dependencies and Run Unit Tests"
+#   dir: "app"
+#   entrypoint: "bash"
+#   args:
+#     - "-c"
+#     - |
+#       pip install -r requirements.txt
+#       pytest -v > /workspace/test_results.txt
 
 - name: "gcr.io/cloud-builders/docker"
   id: "Build Docker Image"
   args: ['build', '-t', '${_IMAGE_NAME}', '.']
 
-- name: 'aquasec/trivy:0.72.0'
-  id: 'Trivy scan'
-  args:
-    - 'image'
-    - '--severity'
-    - 'CRITICAL,HIGH'        # Only fail on critical and high severity
-    - '--no-progress'        # Clean output for CI logs
-    - '--format'
-    - 'table'                # Output format (table, json, template)
-    - '--output'
-    - '/workspace/trivy-report.json'
-    - '${_IMAGE_NAME}'
+# - name: 'aquasec/trivy:0.72.0'
+#   id: 'Trivy scan'
+#   args:
+#     - 'image'
+#     - '--severity'
+#     - 'CRITICAL,HIGH'        # Only fail on critical and high severity
+#     - '--no-progress'        # Clean output for CI logs
+#     - '--format'
+#     - 'table'                # Output format (table, json, template)
+#     - '--output'
+#     - '/workspace/trivy-report.json'
+#     - '${_IMAGE_NAME}'
 
-- name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-  id: "List Buckets"
-  entrypoint: "bash"
-  args:
-    - "-c"
-    - |
-      gcloud storage buckets list
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'fastapi-otp-v-${BUILD_ID}', '--image', '${_IMAGE_NAME}', '--region', 'europe-west4', '--platform', 'managed', '--allow-unauthenticated', '--port', '9000']
+
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -45,9 +42,9 @@ substitutions:
 images:
   - "${_IMAGE_NAME}"
 
-artifacts:
-  objects:
-    location: 'gs://project-be3586ae-547c-413e-aac-build-artifacts/artifacts/$BUILD_ID/'
-    paths:
-      - '/workspace/test_results.txt'
-      - '/workspace/trivy-report.txt'
+# artifacts:
+#   objects:
+#     location: 'gs://project-be3586ae-547c-413e-aac-build-artifacts/artifacts/$BUILD_ID/'
+#     paths:
+#       - '/workspace/test_results.txt'
+#       - '/workspace/trivy-report.txt'

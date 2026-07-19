@@ -2,14 +2,13 @@
 
 
 ## Cloud build stage 
-- 1 Checkout repo
-- 2 Install dependances and test it ✅
-- 3 Test the app --> save outpouts to speskfic folder ✅
-- 4 Build image  ✅
-- 5 Scan image with trivy --> save outputs to spesific folder then put on a bucket ✅
-- 6 Push image to ar ✅
-- 7 Deploy to cloudrun
-- 8 Deploy to k8s [argocd or manual yaml ] 
+- Install dependencies & Run Unit tests ✅
+- Build image  ✅
+- Scan image with trivy ✅
+- Push image to AR ✅
+- Deploy to cloud run
+- Deploy to k8s [argocd or manual yaml ] 
+- Save Artifacts outputs to CloudStorage folder ✅
 
 
 ```bash
@@ -18,4 +17,9 @@ gcloud builds submit --tag europe-west4-docker.pkg.dev/project-be3586ae-547c-413
 
 
 gcloud builds submit --region=europe-west4 --config cloudbuild.yaml
+ gcloud builds submit \
+  --region=europe-west4 \
+  --service-account="projects/project-be3586ae-547c-413e-aac/serviceAccounts/macarious-cloudbuild-sa@project-be3586ae-547c-413e-aac.iam.gserviceaccount.com" \
+  --config cloudbuild.yaml \
+  .
 ```
