@@ -15,7 +15,7 @@ steps:
   entrypoint: "bash"
   args: 
     - '-c'
-    - 'tree workspace; ls -la workspace; cat workspace/test_results.txt'
+    - 'ls -la /workspace; cat /workspace/test_results.txt'
 
 
 - name: "gcr.io/cloud-builders/docker"
