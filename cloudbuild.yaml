@@ -23,16 +23,27 @@ steps:
   id: "Build Docker Image"
   args: ['build', '-t', '${_IMAGE_NAME}', '.']
 
+# - name: 'aquasec/trivy:0.69.3'
+#   id: 'Trivy Report & Scan'
+#   args:
+#     - 'c'
+#     - |
+#       trivy image --scanners vuln ${_IMAGE_NAME}
+#       # # Also generate a JSON report for tooling
+#       # trivy image --format json --output /workspace/trivy-report.json ${_IMAGE_NAME}
+#       # # Gate check - fail if critical or high vulnerabilities exist
+#       # trivy image --exit-code 1 --severity CRITICAL ${_IMAGE_NAME}
+
 - name: 'aquasec/trivy:0.69.3'
-  id: 'Trivy Report & Scan'
+  id: 'scan'
   args:
-    - 'c'
-    - |
-      trivy image --scanners vuln ${_IMAGE_NAME}
-      # # Also generate a JSON report for tooling
-      # trivy image --format json --output /workspace/trivy-report.json ${_IMAGE_NAME}
-      # # Gate check - fail if critical or high vulnerabilities exist
-      # trivy image --exit-code 1 --severity CRITICAL ${_IMAGE_NAME}
+    - 'image'
+    - '--exit-code'
+    - '1'                    # Exit with code 1 if vulnerabilities found
+    - '--severity'
+    - 'CRITICAL,HIGH'        # Only fail on critical and high severity
+    - '--no-progress'        # Clean output for CI logs
+    - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$SHORT_SHA'
 
 
 options:
