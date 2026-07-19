@@ -10,7 +10,7 @@ steps:
       pip install -r requirements.txt
       pytest -v > /workspace/test_results.txt
 
-- name: "linux/ubuntu"
+- name: "ubuntu"
   id: "mac test "
   entrypoint: "bash"
   args: 
