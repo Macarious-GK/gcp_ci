@@ -1,4 +1,9 @@
-# gcp_ci
+# gcp_CI_CD
+- GCP Services Used:
+    - CLoud Build
+    - CLoud Run
+    - Cloud Storage
+    - Artifact registry
 
 
 ## Cloud build stage 
@@ -11,10 +16,12 @@
 - Save Artifacts outputs to CloudStorage folder ✅
 
 
+
+## Commands
+
 ```bash
 docker build -t europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi_otp .
 gcloud builds submit --tag europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi_otp
-
 
 gcloud builds submit --region=europe-west4 --config cloudbuild.yaml
  gcloud builds submit \
