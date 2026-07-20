@@ -33,14 +33,18 @@ steps:
     - '--output'
     - '/workspace/trivy-report.json'
     - '${_IMAGE_NAME}'
+    
+- name: "gcr.io/cloud-builders/docker"
+  id: "Push Docker Image"
+  args: ['push','${_IMAGE_NAME}' ]
 
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   id: 'Deploy to Cloud Run'
   entrypoint: gcloud
   args: ['run', 'deploy', 'fastapi-otp-macarious', '--image', '${_IMAGE_NAME}', '--region', 'europe-west4', '--platform', 'managed', '--allow-unauthenticated', '--port', '9000']
 
-images:
-  - "${_IMAGE_NAME}"
+# images:
+#   - "${_IMAGE_NAME}"
 
 artifacts:
   objects:
