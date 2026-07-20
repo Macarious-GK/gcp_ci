@@ -24,10 +24,12 @@ steps:
   args:
     - 'image'
     - '--severity'
+    # - '--exit-code'
+    # - '1'
     - 'CRITICAL,HIGH'        # Only fail on critical and high severity
     - '--no-progress'        # Clean output for CI logs
     - '--format'
-    - 'table'                # Output format (table, json, template)
+    - 'json'                # Output format (table, json, template)
     - '--output'
     - '/workspace/trivy-report.json'
     - '${_IMAGE_NAME}'
@@ -36,7 +38,8 @@ steps:
   id: 'Deploy to Cloud Run'
   entrypoint: gcloud
   args: ['run', 'deploy', 'fastapi-otp-macarious', '--image', '${_IMAGE_NAME}', '--region', 'europe-west4', '--platform', 'managed', '--allow-unauthenticated', '--port', '9000']
-
+  waitFor:
+    - artifacts
 images:
   - "${_IMAGE_NAME}"
 
@@ -44,5 +47,5 @@ artifacts:
   objects:
     location: 'gs://project-be3586ae-547c-413e-aac-build-artifacts/artifacts/$BUILD_ID/'
     paths:
-      - '/workspace/test_results.txt'
-      - '/workspace/trivy-report.txt'
+      # - '/workspace/test_results.txt'
+      - '/workspace/trivy-report.json'
