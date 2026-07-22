@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-otp-macarious
+  labels:
+    app: fastapi-otp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi-otp
+  template:
+    metadata:
+      labels:
+        app: fastapi-otp
+    spec:
+      containers:
+      - name: fastapi-otp
+        image: europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:latest
+        ports:
+        - containerPort: 9000
+        imagePullPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-otp-service
+spec:
+  selector:
+    app: fastapi-otp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9000
+  type: LoadBalancer

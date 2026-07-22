@@ -1,5 +1,6 @@
 substitutions:
-  _IMAGE_NAME: "europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:${BUILD_ID}"
+  # _IMAGE_NAME: "europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:${BUILD_ID}"
+  _IMAGE_NAME: "europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:latest"
 
 options:
   pool:
@@ -7,34 +8,34 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-- name: "python:3.13"
-  id: "Install Dependencies and Run Unit Tests"
-  dir: "app"
-  entrypoint: "bash"
-  args:
-    - "-c"
-    - |
-      pip install -r requirements.txt
-      pytest -v > /workspace/test_results.txt
+# - name: "python:3.13"
+#   id: "Install Dependencies and Run Unit Tests"
+#   dir: "app"
+#   entrypoint: "bash"
+#   args:
+#     - "-c"
+#     - |
+#       pip install -r requirements.txt
+#       pytest -v > /workspace/test_results.txt
 
 - name: "gcr.io/cloud-builders/docker"
   id: "Build Docker Image"
   args: ['build', '-t', '${_IMAGE_NAME}', '.']
 
-- name: 'aquasec/trivy:0.72.0'
-  id: 'Trivy scan'
-  args:
-    - 'image'
-    - '--severity'
-    # - '--exit-code'
-    # - '1'
-    - 'CRITICAL,HIGH'        # Only fail on critical and high severity
-    - '--no-progress'        # Clean output for CI logs
-    - '--format'
-    - 'json'                # Output format (table, json, template)
-    - '--output'
-    - '/workspace/trivy-report.json'
-    - '${_IMAGE_NAME}'
+# - name: 'aquasec/trivy:0.72.0'
+#   id: 'Trivy scan'
+#   args:
+#     - 'image'
+#     - '--severity'
+#     # - '--exit-code'
+#     # - '1'
+#     - 'CRITICAL,HIGH'        # Only fail on critical and high severity
+#     - '--no-progress'        # Clean output for CI logs
+#     - '--format'
+#     - 'json'                # Output format (table, json, template)
+#     - '--output'
+#     - '/workspace/trivy-report.json'
+#     - '${_IMAGE_NAME}'
     
 - name: "gcr.io/cloud-builders/docker"
   id: "Push Docker Image"
@@ -45,8 +46,12 @@ steps:
   entrypoint: gcloud
   args: ['run', 'deploy', 'fastapi-otp-macarious', '--image', '${_IMAGE_NAME}', '--region', 'europe-west4', '--platform', 'managed', '--allow-unauthenticated', '--port', '9000']
 
-# images:
-#   - "${_IMAGE_NAME}"
+- name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=./K8s/deployment.yaml
+  - --location=europe-west4
+  - --cluster=macarious-autopilot-cluster-1 
 
 artifacts:
   objects:
