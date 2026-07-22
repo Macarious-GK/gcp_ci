@@ -28,7 +28,7 @@ def save_db():
 
 @app.get("/")
 def read_root():
-    return {"Hello": "Macarious Version 1.0.3"}
+    return {"Hello": "Macarious Version 1.0.4"}
 
 class OTPRequest(BaseModel):
     email: str

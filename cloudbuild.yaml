@@ -2,6 +2,8 @@ substitutions:
   _IMAGE_NAME: "europe-west4-docker.pkg.dev/project-be3586ae-547c-413e-aac/warmup2first/fastapi-otp:${BUILD_ID}"
 
 options:
+  pool:
+      name: 'projects/project-be3586ae-547c-413e-aac/locations/europe-west4/workerPools/macarious-private-pool'
   logging: CLOUD_LOGGING_ONLY
 
 steps:
