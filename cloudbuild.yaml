@@ -8,15 +8,15 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-# - name: "python:3.13"
-#   id: "Install Dependencies and Run Unit Tests"
-#   dir: "app"
-#   entrypoint: "bash"
-#   args:
-#     - "-c"
-#     - |
-#       pip install -r requirements.txt
-#       pytest -v > /workspace/test_results.txt
+- name: "python:3.13"
+  id: "Install Dependencies and Run Unit Tests"
+  dir: "app"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+      pip install -r requirements.txt
+      pytest -v > /workspace/test_results.txt
 
 # - name: "gcr.io/cloud-builders/docker"
 #   id: "Build Docker Image"
@@ -46,12 +46,12 @@ steps:
 #   entrypoint: gcloud
 #   args: ['run', 'deploy', 'fastapi-otp-macarious', '--image', '${_IMAGE_NAME}', '--region', 'europe-west4', '--platform', 'managed', '--allow-unauthenticated', '--port', '9000']
 
-- name: "gcr.io/cloud-builders/gke-deploy"
-  args:
-  - run
-  - --filename=./K8s/deployment.yaml
-  - --location=europe-west4
-  - --cluster=macarious-autopilot-cluster-1 
+# - name: "gcr.io/cloud-builders/gke-deploy"
+#   args:
+#   - run
+#   - --filename=./K8s/deployment.yaml
+#   - --location=europe-west4
+#   - --cluster=macarious-autopilot-cluster-1 
 
 # artifacts:
 #   objects:

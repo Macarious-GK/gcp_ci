@@ -1,0 +1,19 @@
+steps:
+- name: 'bash'
+  args: ['echo', '${_IMAGE_NAME}  ::: $BUILD_ID is I am running in $LOCATION a private pool!${PROJECT_ID} echo ${_IMAGE_NAME}']
+
+- name: 'alpine:3.20'
+  args:
+    - ping
+    - -c
+    - "4"
+    - "10.0.55.66"
+
+options:
+  pool:
+    name: 'projects/project-be3586ae-547c-413e-aac/locations/europe-west4/workerPools/macarious-private-pool'
+  logging: CLOUD_LOGGING_ONLY
+  substitutionOption: 'ALLOW_LOOSE'
+
+substitutions:
+  _IMAGE_NAME: "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/warmup2first/fastapi-otp:${BUILD_ID}"
