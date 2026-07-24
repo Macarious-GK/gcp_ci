@@ -4,10 +4,25 @@
 
 options:
   pool:
-      name: 'projects/project-be3586ae-547c-413e-aac/locations/europe-west4/workerPools/macarious-private-pool'
+      # name: 'projects/project-be3586ae-547c-413e-aac/locations/europe-west4/workerPools/macarious-private-pool'
+      name: 'projects/project-be3586ae-547c-413e-aac/locations/europe-west4/workerPools/private-pool-with-nat'
+
   logging: CLOUD_LOGGING_ONLY
 
 steps:
+- name: 'alpine:3.20'
+  args:
+    - ping
+    - -c
+    - "4"
+    - "10.0.55.66"
+
+- name: 'alpine:3.20'
+  args:
+    - ping
+    - -c
+    - "4"
+    - "8.8.8.8"
 - name: "python:3.13"
   id: "Install Dependencies and Run Unit Tests"
   dir: "app"
