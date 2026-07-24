@@ -10,12 +10,6 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-- name: 'alpine:3.20'
-  args:
-    - ping
-    - -c
-    - "4"
-    - "10.1.0.98"
 
 - name: 'alpine:3.20'
   args:
@@ -33,6 +27,12 @@ steps:
       pip install -r requirements.txt
       pytest -v > /workspace/test_results.txt
 
+- name: 'alpine:3.20'
+  args:
+    - ping
+    - -c
+    - "4"
+    - "10.1.0.98"
 # - name: "gcr.io/cloud-builders/docker"
 #   id: "Build Docker Image"
 #   args: ['build', '-t', '${_IMAGE_NAME}', '.']
